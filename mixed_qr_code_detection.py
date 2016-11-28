@@ -36,7 +36,8 @@ if __name__ == '__main__':
         'qr-2.png', 'qr-3.png', 'qr-4.png',
         'two_qrs_cut1.png', 'two_qrs_cut2.png', 'two_qrs.png',
         'qr_rotated.png',
-        'qr_code_mixed.png'
+        'qr_code_mixed.png',
+        'qr_projected.png'
     ]
     for image in qr_imgages:
         main(image)
