@@ -29,8 +29,14 @@ def main(image_path):
         cv2.polylines(draw_img, np.int32([qr_code_box]), True, (255, 0, 0), 4)
     qr.show(draw_img)
 
+
 if __name__ == '__main__':
-    main('two_qrs_cut2.png')
-    main('two_qrs_cut1.png')
-    main('qr_code_mixed.png')
-    main('two_qrs.png')
+    qr_imgages = [
+        'qr-1.png',
+        'qr-2.png', 'qr-3.png', 'qr-4.png',
+        'two_qrs_cut1.png', 'two_qrs_cut2.png', 'two_qrs.png',
+        'qr_rotated.png',
+        'qr_code_mixed.png'
+    ]
+    for image in qr_imgages:
+        main(image)

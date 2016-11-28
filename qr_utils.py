@@ -28,7 +28,13 @@ def __two_nearest_line__(b1, b2):
         for q in b2:
             distances.append([__distance__(p, q), (p, q)])
     distances = sorted(distances, key=lambda d: d[0])
-    return distances[0], distances[1]
+    a1, b1 = distances[0][1][0], distances[0][1][1]
+    a2, b2 = distances[1][1][0], distances[1][1][1]
+    a1 = (a1[0] + (a2[0] - a1[0]) * 1 / 14, a1[1] + (a2[1] - a1[1]) * 1 / 14)
+    b1 = (b1[0] + (b2[0] - b1[0]) * 1 / 14, b1[1] + (b2[1] - b1[1]) * 1 / 14)
+    a2 = (a2[0] + (a1[0] - a2[0]) * 1 / 14, a2[1] + (a1[1] - a2[1]) * 1 / 14)
+    b2 = (b2[0] + (b1[0] - b2[0]) * 1 / 14, b2[1] + (b1[1] - b2[1]) * 1 / 14)
+    return (a1, b1), (a2, b2)
 
 
 # image utils
@@ -110,8 +116,8 @@ def draw_lines(img, boxes):
     for i in range(len(boxes)):
         for j in range(i + 1, len(boxes)):
             d1, d2 = __two_nearest_line__(boxes[i], boxes[j])
-            cv2.line(draw_img, d1[1][0], d1[1][1], (0, 255, 0), 2)
-            cv2.line(draw_img, d2[1][0], d2[1][1], (0, 255, 0), 2)
+            cv2.line(draw_img, d1[0], d1[1], (0, 255, 0), 2)
+            cv2.line(draw_img, d2[0], d2[1], (0, 255, 0), 2)
     show(draw_img)
 
 
@@ -262,7 +268,7 @@ def get_valid_boxes_index(boxes, qr_bi):
     for i in range(len(boxes)):
         for j in range(i + 1, len(boxes)):
             d1, d2 = __two_nearest_line__(boxes[i], boxes[j])
-            for d in [d1[1], d2[1]]:
+            for d in [d1, d2]:
                 line_pixels = LineIterator.createLineIterator(d[0], d[1], qr_bi)
                 if is_timing_pattern(line_pixels[:, 2]):
                     timing_patterns.append((d[0], d[1]))
