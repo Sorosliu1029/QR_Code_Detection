@@ -8,6 +8,7 @@ def main(image_path):
     qr_origin, qr_gray = qr.read_image(image_path)
     qr.show(qr_origin)
     qr.show(qr_gray)
+    # TODO gaussian blur before Canny
     edges = qr.get_edges(qr_origin)
     qr.show(edges)
     contours, hierarchy = qr.get_contours(edges)
@@ -31,7 +32,7 @@ def main(image_path):
 
 
 if __name__ == '__main__':
-    qr_imgages = [
+    qr_images = [
         'qr-1.png',
         'qr-2.png', 'qr-3.png', 'qr-4.png',
         'two_qrs_cut1.png', 'two_qrs_cut2.png', 'two_qrs.png',
@@ -39,5 +40,5 @@ if __name__ == '__main__':
         'qr_code_mixed.png',
         'qr_projected.png'
     ]
-    for image in qr_imgages:
+    for image in qr_images:
         main(image)
