@@ -89,7 +89,7 @@ def draw_all_position_patterns(img, found, contours):
     for i in found:
         rect = cv2.minAreaRect(contours[i])
         box = np.int0(cv2.cv.BoxPoints(rect))
-        cv2.drawContours(draw_img, [box], 0, (255, 0, 0), 2)
+        cv2.drawContours(draw_img, [box], 0, (0, 0, 255), 2)
     show(draw_img)
 
 
@@ -116,8 +116,8 @@ def draw_lines(img, boxes):
     for i in range(len(boxes)):
         for j in range(i + 1, len(boxes)):
             d1, d2 = __two_nearest_line__(boxes[i], boxes[j])
-            cv2.line(draw_img, d1[0], d1[1], (0, 255, 0), 2)
-            cv2.line(draw_img, d2[0], d2[1], (0, 255, 0), 2)
+            cv2.line(draw_img, tuple(map(int, d1[0])), tuple(map(int, d1[1])), (0, 255, 0), 2)
+            cv2.line(draw_img, tuple(map(int, d2[0])), tuple(map(int, d2[1])), (0, 255, 0), 2)
     show(draw_img)
 
 
@@ -191,6 +191,7 @@ def get_alignment_pattern(contours, hierarchy):
             found.append(i)
     return found
 
+
 def get_contours_points(found, contours):
     """
     get contour's all inner points
@@ -228,8 +229,9 @@ def get_boxes(found, contours):
     """
     boxes = []
     for i in found:
-        contour_points = get_contours_points([i], contours)
-        box = get_area_box(contour_points)
+        rect = cv2.minAreaRect(contours[i])
+        box = np.int0(cv2.cv.BoxPoints(rect))
+        box = map(tuple, box)
         boxes.append(box)
     return boxes
 

@@ -7,8 +7,8 @@ import qr_utils as qr
 def main(image_path):
     qr_origin, qr_gray = qr.read_image(image_path)
     qr.show(qr_origin)
+    qr_gray = cv2.GaussianBlur(qr_gray, (5, 5), 0)
     qr.show(qr_gray)
-    # TODO gaussian blur before Canny
     edges = qr.get_edges(qr_origin)
     qr.show(edges)
     contours, hierarchy = qr.get_contours(edges)
