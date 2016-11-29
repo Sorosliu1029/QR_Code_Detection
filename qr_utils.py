@@ -179,6 +179,18 @@ def get_position_patterns(contours, hierarchy):
     return found
 
 
+def get_alignment_pattern(contours, hierarchy):
+    found = []
+    for i in range(len(contours)):
+        k = i
+        c = 0
+        while hierarchy[k][2] != -1:
+            k = hierarchy[k][2]
+            c += 1
+        if c in [3, 4]:
+            found.append(i)
+    return found
+
 def get_contours_points(found, contours):
     """
     get contour's all inner points
@@ -216,9 +228,8 @@ def get_boxes(found, contours):
     """
     boxes = []
     for i in found:
-        rect = cv2.minAreaRect(contours[i])
-        box = np.int0(cv2.cv.BoxPoints(rect))
-        box = map(tuple, box)
+        contour_points = get_contours_points([i], contours)
+        box = get_area_box(contour_points)
         boxes.append(box)
     return boxes
 
