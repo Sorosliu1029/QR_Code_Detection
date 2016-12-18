@@ -36,5 +36,83 @@ Gray = 0.299 * R + 0.5866 * G + 0.1145 * B
 \label{fig:blured}
 \end{figure}
 
+\subsubsection{边缘增强}
+\subparagraph{Max-Min算法}
+通常输入的图像可能包含大量的边缘纹理和噪声信息，Max-Min差分操作\cite{13}能有效减少一些较小的噪声，同时目标区域的效果。
+Max-Min差分操作的基本表达式\ref{maxmin1}如下：
+\begin{equation}\label{maxmin1}
+D(x,y) = max\{f(x+i, y+j)\} - min\{f(x+i, y+j)\}
+\end{equation}
+其中，$ 0 \le x \le w, 0 \le y \le h $, $ w $ 和 $ h $ 为输入图像的高和宽。\\
+\begin{equation}\label{max}
+max = max\{f(x+i,y+j)\}
+\end{equation}
+\begin{equation}\label{min}
+min = min\{f(x+i,y+j)\}
+\end{equation}
+其中，$ 0 \le i \le 3, 0 \le j \le 3 $, $ max $ 和 $ min $ 分别表示输入图像中一个窗口大小为 4*4的区域内像素值的最大值和最小值。\\
+经Max-Min操作后二维码区域被较好地突显出来，同时部分噪声也能够得到抑制。这种方法使提取的目标区域，即黑白相间的二维码区域的相邻像素间显示出较高的差异性，这种特性为后续二维码的分割提取提供了很好的保证。
+\subparagraph{Canny算子}
+边缘提取以及边缘增强是图像处理中的基本方法，Canny算子\cite{14}增强效果明显。
+在二维码检测定位的应用中，目标的边缘信息是非常重要的特征之一。
+图像边缘保留了原始图像中相当重要的部分信息，同时又使总的数据量减少，这正符合二维码特征提取的要求。\\
+Canny算子能够尽可能多地标识出图像中的实际边缘，漏检真实边缘的概率和误检非边缘的概率都比较小。
+其检测到的边缘点的位置距离实际边缘点的位置最近。
+因此，引入Canny算子作为本实验边缘提取的方法，用于找到二维码的最优边缘。
+经过Canny算子增强边缘之后的图像如图\ref{fig:canny}所示。
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\linewidth]{canny}
+\caption[canny]{Canny算子增强边缘后的图像}
+\label{fig:canny}
+\end{figure}
+
+\subsubsection{轮廓检测}
+在上一步得到边缘信息之后，接下来我们通过检测轮廓来找到二维码中的定位模块。\\
+在这里我们使用了OpenCV提供的轮廓检测方法：“findfindContours”。
+OpenCV中对轮廓采用层次结构的表示方式，如图\ref{fig:contour}示意。
+\begin{figure}[h]
+\centering
+\includegraphics[width=1\linewidth]{contour}
+\caption[contour]{OpenCV中轮廓的表示形式}
+\label{fig:contour}
+\end{figure}
+
+由于这里一条边缘会有内外两条轮廓，所以对于简单的图像，只要遍历轮廓的层次关系，找到嵌套层数大于等于5的轮廓，就是我们要找的定位模块。
+图\ref{fig:detection}(a)-(c)即为从图像中找到的定位模块。
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\linewidth]{detection}
+\caption[detection]{检测到的QR码定位模块和检测结果框(绿色标记为定位模块，蓝色标记为检测结果框)}
+\label{fig:detection}
+\end{figure}
+
+\subsubsection{最小区域覆盖}
+在规范的二维码中，一旦检测到了三个定位模块，那么整个二维码的结果框就自然而然地形成了。\\
+在这里我们使用了OpenCV提供的最小矩形区域方法：”minAreaRect“和包围盒顶点方法：”BoxPoints“。
+最小矩形区域方法用来得到覆盖上述三个定位模块的最小矩形，从而将这个最小矩形设置为二维码检测的结果框。
+包围盒顶点方法用来得到最小矩形的四个顶点坐标，便于之后将检测结果框绘制出来。\\
+利用这两个便利的方法，我们可以得到原始二维码的检测结果框如图\ref{fig:detection}(d)所示。
+
+\subsubsection{优缺点}
+\subparagraph{优点}
+基本方法的优点在于实现简单明了，检测的速度也有保证，对于拍摄清晰端正，背景简单的图像有较好的检测效果。
+\subparagraph{缺点}
+另一方面，这类简单方法的缺点也很明显。
+(1).对于复杂图像场景下的二维码，检测框可能会跑偏，检测到另外的二维码的定位模块。在实验中，如图\ref{fig:problem1}的二维码场景就会出现误检，将检测框覆盖了其他的二维码的定位模块。
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\linewidth]{../../../presentation/problem3}
+\caption[problem1]{基本方法的问题：检测框错误覆盖}
+\label{fig:problem1}
+\end{figure}
+
+(2).当二维码图像在拍摄时因为角度问题产生透视时，基本方法的检测框显得过大，而且检测结果仍是透视的，不便于之后的解码识别操作。图\ref{fig:perspectiveproblem}即是这个问题的具体例子。
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\linewidth]{perspective_problem}
+\caption[problem2]{图像透视时的检测问题}
+\label{fig:perspectiveproblem}
+\end{figure}
 
 \subsection{第二种方法：改进方法}
