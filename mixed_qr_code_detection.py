@@ -40,5 +40,6 @@ if __name__ == '__main__':
         'qr_code_mixed.png',
         'qr_projected.png'
     ]
+    qr_images = ['qr_color.png']
     for image in qr_images:
         main(image)
